@@ -33,7 +33,22 @@ function linkmend:ADDON_LOADED()
 
 	local orig_ChatFrame_OnEvent = ChatFrame_OnEvent
 	ChatFrame_OnEvent = function(event)
-		if event == 'CHAT_MSG_CHANNEL' then
+		if event == 'CHAT_MSG_CHANNEL'
+			or event == 'CHAT_MSG_GUILD'
+			or event == 'CHAT_MSG_PARTY'
+			or event == 'CHAT_MSG_RAID'
+			or event == 'CHAT_MSG_RAID_LEADER'
+			or event == 'CHAT_MSG_RAID_WARNING'
+			or event == 'CHAT_MSG_WHISPER'
+			or event == 'CHAT_MSG_SAY'
+			or event == 'CHAT_MSG_YELL'
+			or event == 'CHAT_MSG_BATTLEGROUND'
+			or event == 'CHAT_MSG_BATTLEGROUND_LEADER'
+			or event == 'CHAT_MSG_OFFICER'
+			or event == 'CHAT_MSG_AFK'
+			or event == 'CHAT_MSG_DND'
+			or event == 'CHAT_MSG_EMOTE'
+		then
 			arg1 = linkmend.mend_clinks(arg1)
 			arg1 = linkmend.mend_links(arg1)
 		end
