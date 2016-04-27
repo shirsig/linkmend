@@ -1,4 +1,4 @@
-local linkmend = CreateFrame('Frame', nil, UIParent)
+local linkmend = CreateFrame('Frame')
 linkmend:SetScript('OnEvent', function()
 	this[event](this)
 end)
@@ -10,13 +10,13 @@ local LINK_PATTERN = '|c%x%x%x%x%x%x%x%x|Hitem:(%d*):(%d*):(%d*):(%d*)[:0-9]*|h%
 
 local LINK_TEMPLATE = '|c%s|Hitem:%s:%s:%s:%s|h[%s]|h|r'
 
-function linkmend.mend_clinks(text)
+function linkmend:mend_clinks(text)
 	return string.gsub(text, CLINK_PATTERN, function(color, item_id, enchant_id, suffix_id, unique_id, name)
 		return format(LINK_TEMPLATE, color, item_id, enchant_id, suffix_id, unique_id, name)
 	end)
 end
 
-function linkmend.mend_links(text)
+function linkmend:mend_links(text)
 	return string.gsub(text, LINK_PATTERN, function(item_id, enchant_id, suffix_id, unique_id)
 		local name, _, quality = GetItemInfo(format('item:%s:0:%s', item_id, suffix_id))
 		if name then
@@ -49,8 +49,8 @@ function linkmend:ADDON_LOADED()
 			or event == 'CHAT_MSG_DND'
 			or event == 'CHAT_MSG_EMOTE'
 		then
-			arg1 = linkmend.mend_clinks(arg1)
-			arg1 = linkmend.mend_links(arg1)
+			arg1 = self:mend_clinks(arg1)
+			arg1 = self:mend_links(arg1)
 		end
 		return orig_ChatFrame_OnEvent(event)
 	end
