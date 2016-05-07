@@ -6,7 +6,7 @@ linkmend:RegisterEvent('ADDON_LOADED')
 
 local CLINK_PATTERN = '%{CLINK:(%x%x%x%x%x%x%x%x):(%d*):(%d*):(%d*):(%d*):([^}]*)%}'
 
-local LINK_PATTERN = '|c%x%x%x%x%x%x%x%x|Hitem:(%d*):(%d*):(%d*):(%d*)[:0-9]*|h%[[^]]*%]|h|r'
+local LINK_PATTERN = '|c(%x%x%x%x%x%x%x%x)|Hitem:(%d*):(%d*):(%d*):(%d*)[:0-9]*|h%[([^]]*)%]|h|r'
 
 local LINK_TEMPLATE = '|c%s|Hitem:%s:%s:%s:%s|h[%s]|h|r'
 
@@ -17,13 +17,13 @@ function linkmend:mend_clinks(text)
 end
 
 function linkmend:mend_links(text)
-	return string.gsub(text, LINK_PATTERN, function(item_id, enchant_id, suffix_id, unique_id)
-		local name, _, quality = GetItemInfo(format('item:%s:0:%s', item_id, suffix_id))
-		if name then
+	return string.gsub(text, LINK_PATTERN, function(color, item_id, enchant_id, suffix_id, unique_id, name)
+		local cached_name, _, quality = GetItemInfo(format('item:%s:0:%s', item_id, suffix_id))
+		if cached_name then
 			local color = strsub(({GetItemQualityColor(quality)})[4], 3)
-			return format(LINK_TEMPLATE, color, item_id, enchant_id, suffix_id, unique_id, name)
+			return format(LINK_TEMPLATE, color, item_id, enchant_id, suffix_id, unique_id, cached_name)
 		else
-			return text
+			return format(LINK_TEMPLATE, color, item_id, enchant_id, suffix_id, unique_id, name)
 		end
 	end)
 end
