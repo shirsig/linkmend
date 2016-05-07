@@ -22,6 +22,8 @@ function linkmend:mend_links(text)
 		if name then
 			local color = strsub(({GetItemQualityColor(quality)})[4], 3)
 			return format(LINK_TEMPLATE, color, item_id, enchant_id, suffix_id, unique_id, name)
+		else
+			return text
 		end
 	end)
 end
