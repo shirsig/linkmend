@@ -11,13 +11,13 @@ local LINK_PATTERN = '|c(%x%x%x%x%x%x%x%x)|Hitem:(%d*):(%d*):(%d*):(%d*)[:0-9]*|
 local LINK_TEMPLATE = '|c%s|Hitem:%s:%s:%s:%s|h[%s]|h|r'
 
 function linkmend:mend_clinks(text)
-	return string.gsub(text, CLINK_PATTERN, function(color, item_id, enchant_id, suffix_id, unique_id, name)
+	return gsub(text, CLINK_PATTERN, function(color, item_id, enchant_id, suffix_id, unique_id, name)
 		return format(LINK_TEMPLATE, color, item_id, enchant_id, suffix_id, unique_id, name)
 	end)
 end
 
 function linkmend:mend_links(text)
-	return string.gsub(text, LINK_PATTERN, function(color, item_id, enchant_id, suffix_id, unique_id, name)
+	return gsub(text, LINK_PATTERN, function(color, item_id, enchant_id, suffix_id, unique_id, name)
 		local cached_name, _, quality = GetItemInfo(format('item:%s:0:%s', item_id, suffix_id))
 		if cached_name then
 			local color = strsub(({GetItemQualityColor(quality)})[4], 3)
@@ -29,16 +29,33 @@ function linkmend:mend_links(text)
 end
 
 function linkmend:mend_tags(text)
-	return string.gsub(text, '%b<>', function(tag)
-		local name = strsub(tag, 2, -2)
-		local item_info = self.item_cache[strupper(name)]
-		if item_info then
-			local color = strsub(({GetItemQualityColor(item_info.quality)})[4], 3)
-			return format(LINK_TEMPLATE, color, item_info.item_id, 0, 0, 0, item_info.name)
-		else
-			return format('[%s]', name)
+	local position = 1
+	while true do
+		Aux.log(text)
+		tag_start, tag_end, tag = strfind(text, '(%b[])', position)
+		if not tag_start then
+			break
 		end
-	end)
+
+		link_start, link_end = strfind(text, LINK_PATTERN, position)
+		if link_start and link_start < tag_start then
+			position = link_end + 1
+		else
+			local link
+			local name = strsub(tag, 2, -2)
+			local item_info = self.item_cache[strupper(name)]
+			if item_info then
+				local color = strsub(({GetItemQualityColor(item_info.quality)})[4], 3)
+				link = format(LINK_TEMPLATE, color, item_info.item_id, 0, 0, 0, item_info.name)
+			else
+				link = format('[%s]', name)
+			end
+
+			text = strsub(text, 1, tag_start - 1)..link..strsub(text, tag_end + 1)
+			position = tag_start + strlen(link)
+		end
+	end
+	return text
 end
 
 function linkmend:ADDON_LOADED()
@@ -81,6 +98,7 @@ function linkmend:ADDON_LOADED()
 	local orig_SendChatMessage = SendChatMessage
 	SendChatMessage = function(...)
 		arg[1] = self:mend_tags(arg[1])
+		Aux.log(arg[1])
 		return orig_SendChatMessage(unpack(arg))
 	end
 end
