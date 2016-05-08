@@ -31,7 +31,6 @@ end
 function linkmend:mend_tags(text)
 	local position = 1
 	while true do
-		Aux.log(text)
 		tag_start, tag_end, tag = strfind(text, '(%b[])', position)
 		if not tag_start then
 			break
@@ -98,7 +97,6 @@ function linkmend:ADDON_LOADED()
 	local orig_SendChatMessage = SendChatMessage
 	SendChatMessage = function(...)
 		arg[1] = self:mend_tags(arg[1])
-		Aux.log(arg[1])
 		return orig_SendChatMessage(unpack(arg))
 	end
 end
