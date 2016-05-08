@@ -50,7 +50,7 @@ function linkmend:ADDON_LOADED()
 	for item_id=1,20000 do
 		local name, _, quality = GetItemInfo('item:'..item_id)
 		if name then
-			self.item_cache[strupper(name)] = { item_id = item_id, name = name, quality = quality }
+			self.item_cache[strupper(name)] = {item_id=item_id, name=name, quality=quality}
 		end
 	end
 
