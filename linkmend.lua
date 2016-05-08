@@ -36,7 +36,7 @@ function linkmend:mend_tags(text)
 			local color = strsub(({GetItemQualityColor(item_info.quality)})[4], 3)
 			return format(LINK_TEMPLATE, color, item_info.item_id, 0, 0, 0, item_info.name)
 		else
-			return format('[%s]', pattern)
+			return format('[%s]', name)
 		end
 	end)
 end
