@@ -22,26 +22,29 @@ local function mend_links(text)
 	end)
 end
 
-local orig = ChatFrame_OnEvent
-function ChatFrame_OnEvent(event)
-	if event == 'CHAT_MSG_CHANNEL'
-		or event == 'CHAT_MSG_GUILD'
-		or event == 'CHAT_MSG_PARTY'
-		or event == 'CHAT_MSG_RAID'
-		or event == 'CHAT_MSG_RAID_LEADER'
-		or event == 'CHAT_MSG_RAID_WARNING'
-		or event == 'CHAT_MSG_WHISPER'
-		or event == 'CHAT_MSG_SAY'
-		or event == 'CHAT_MSG_YELL'
-		or event == 'CHAT_MSG_BATTLEGROUND'
-		or event == 'CHAT_MSG_BATTLEGROUND_LEADER'
-		or event == 'CHAT_MSG_OFFICER'
-		or event == 'CHAT_MSG_AFK'
-		or event == 'CHAT_MSG_DND'
-		or event == 'CHAT_MSG_EMOTE'
-	then
-		arg1 = mend_clinks(arg1)
-		arg1 = mend_links(arg1)
+CreateFrame'Frame':SetScript('OnUpdate', function()
+	this:SetScript('OnUpdate', nil)
+	local orig = ChatFrame_OnEvent
+	function ChatFrame_OnEvent(event)
+		if event == 'CHAT_MSG_CHANNEL'
+			or event == 'CHAT_MSG_GUILD'
+			or event == 'CHAT_MSG_PARTY'
+			or event == 'CHAT_MSG_RAID'
+			or event == 'CHAT_MSG_RAID_LEADER'
+			or event == 'CHAT_MSG_RAID_WARNING'
+			or event == 'CHAT_MSG_WHISPER'
+			or event == 'CHAT_MSG_SAY'
+			or event == 'CHAT_MSG_YELL'
+			or event == 'CHAT_MSG_BATTLEGROUND'
+			or event == 'CHAT_MSG_BATTLEGROUND_LEADER'
+			or event == 'CHAT_MSG_OFFICER'
+			or event == 'CHAT_MSG_AFK'
+			or event == 'CHAT_MSG_DND'
+			or event == 'CHAT_MSG_EMOTE'
+		then
+			arg1 = mend_clinks(arg1)
+			arg1 = mend_links(arg1)
+		end
+		return orig(event)
 	end
-	return orig(event)
-end
+end)
